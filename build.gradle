@@ -3,6 +3,8 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
+version = '1.0'
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.8
 
 repositories {
@@ -15,6 +17,27 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
-task stage {
-    dependsOn build
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Vxml echo webserver',
+                'Implementation-Version': version,
+                'Main-Class': 'com.github.kongeor.vxml.Main'
+    }
+    baseName = project.name
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task stage(type: Copy, dependsOn: [clean, fatJar]) {
+    from jar.archivePath
+    into project.rootDir
+    rename {
+        'app.jar'
+    }
+}
+
+stage.mustRunAfter(clean)
+
+clean << {
+    project.file('app.jar').delete()
 }
