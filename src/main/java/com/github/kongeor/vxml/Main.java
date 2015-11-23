@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        port(Integer.parseInt(System.getProperty("PORT", "4567")));
+        port(Integer.parseInt(System.getProperty("server.port", "4567")));
         staticFileLocation("/public");
 
         get("/echo", (req, res) -> {
